@@ -103,7 +103,7 @@ class Server {
     try {
       await this.client.connect()
       this.register()
-      this.http.listen(3000, function(){
+      this.http.listen(process.env.PORT || 8080, function(){
         console.log('listening on *:3000')
       })
     } catch (err) {
