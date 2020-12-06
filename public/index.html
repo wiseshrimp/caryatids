@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="three.min.js"></script>
-    <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js" integrity="sha512-Q+IG0h7As6sfqE2t1Xf5IeamNyCXb4EXxGCA9Mlbpv7xtwurVHNdVDbyWeSQ3ulPf2FRlqeu77Ec3SJDdIR63w==" crossorigin="anonymous"></script>    <meta charset="utf-8" />
     <link rel="stylesheet" href="./style.css">
 
   </head>
   <body>
-    <div id="main">
-        <form method="post" action="/upload" enctype="multipart/form-data">
-          <input type="file" id="image" name="image" accept="image/jpeg">
-          <input type="submit" id="loadThree" value="Enter">
-        </form>
-    </div>
-    <iframe id="clouds" width="560" height="315" src="https://www.youtube.com/embed/Wimkqo8gDZ0?controls=0&showinfo=0&loop=1&autoplay=1&mute=1&allowfullscreen=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen autoplay></iframe>
+    <video id="sculptures" type="video/mp4" loop src="./videos/sculptures.mp4"></video>
+    <video id="audrey" type="video/mp4" loop src="./videos/AudreyMunson.mp4"></video>
+
     <canvas id="canvas"></canvas>
-    
-    <!-- Text -->
-    <form id="bulletin">
-        <input type="text" id="bulletinText" name="bulletin" placeholder="Add message">
-    </form>
-    <canvas id="textToImage" width="600" height="600"></canvas>
-    <img id="bulletinImg">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    <script src="objLoader.js"></script>
-    <script src="orbitControls.js"></script>
-    <script src="textToImage.js"></script>
-    <script src="script.js"></script>
+    <script src="constants.js"></script>
+    <script src="gltfLoader.js"></script>
+    <script src="RGBELoader.js"></script>
+    <script src="dragControls.js"></script>
+    <script src="caryatids.js"></script>
   </body>
 </html>

@@ -6,61 +6,6 @@ body {
     width: 100vw;
 }
 
-#canvas {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    display: none;
-}
-
-#main {
-    width: 50vw;
-    height: 50vh;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    position: absolute;
-    background-color: #b8c8dc;
-    border-radius: 5px;
-    left: 25vw;
-    top: 25vh;
-    box-shadow: 0px 0px 12px grey;
-    overflow: auto;
-}
-
-#clouds {
-    position: absolute;
-    top: -50vh;
-    left: -50vw;
-    width: 200vw;
-    height: 200vh;
-    pointer-events: none;
-    z-index: 1;
-}
-
-#bulletin {
-    position: absolute;
-    bottom: 0;
-    width: 90vw;
-    left: 5vw;
-    margin: 10px;
-    z-index: 1;
-    display: none;
-}
-
-#bulletinText {
-    width: 90%;
-    font-family: monospace;
-}
-
-#bulletinImg {
-    position: absolute;
-    z-index: 2;
-    width: 30%;
-    height: auto;
-    transition: all 0.1s;
+video {
     display: none;
 }

@@ -12,6 +12,7 @@ class Server {
     this.app = express()
     this.http = require('http').createServer(this.app)
     this.io = require('socket.io')(this.http)
+    this.sockets = []
   
     // Set up MongoDB Client
     const MongoClient = require('mongodb').MongoClient
@@ -43,30 +44,38 @@ class Server {
     
     this.io.on('connection', (socket) => {
       console.log('a user connected')
-    
-      this.readDatabaseCollection('images').then((images) => {
-        console.log(images.length)
-        socket.emit('loadWindows', images)
+      this.sockets.push({
+        id: socket.id,
+        pos: {x: 0, y: 0, z: 20},
+        rot: {x: 0, y: 0, z: 0}
       })
-    
+      socket.emit('initialload', this.sockets)
+  
+      socket.on('userconnect', data => {
+        let mesh = {
+          id: socket.id,
+          pos: data.pos,
+          rot: data.rot
+        }
+        socket.broadcast.emit('userconnect', mesh)
+      })
+
       socket.on('disconnect', () => {
+        socket.broadcast.emit('userdisconnect', socket.id)
+        let idx = this.sockets.findIndex(mesh => mesh.id === socket.id)
+        this.sockets = this.sockets.splice(idx, 1)
         console.log('user disconnected')
       })
     
-      socket.on('mousemove', (data) => {
-        socket.broadcast.emit('mousemove', {
+      socket.on('move', (data) => {
+
+        socket.broadcast.emit('move', {
           id: socket.id, 
-          pos: data.pos
+          pos: data.pos,
+          rot: data.rot
         })
       })
-    
-      socket.on('message', (bulletin) => {
-        console.log(bulletin) // {position: [x, y, z], message: ''}
-        this.saveToDatabase('bulletin', bulletin)
-        
-        // Broadcast new message to all other socket clients
-        socket.broadcast.emit('newMessage', bulletin)
-      })
+
     })
   }
 
