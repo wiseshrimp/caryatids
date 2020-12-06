@@ -1,14 +1,3 @@
-/*
-
-TO DO:
-- Connect db
-- Setup controls
-- Add image uploader to s3 & format image to be correct window ratio before saving
-- Make wall/window look nice
-- Fix text? Looks very blurry
-
-*/
-
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
@@ -30,6 +19,10 @@ class App {
         this.dots = []
 
         // Window position settings
+
+        this.isSinglePlayer = false
+        this.hasLoaded = false
+
         this.windowX = 0
         this.windowY = 4.1
         this.windowZ = -10.9
@@ -38,19 +31,66 @@ class App {
         this.sockets = []
         
         this.door = null
+        this.name = 'Mysterious Stranger'
         this.secondDoor = null
         this.isDoorMoving = false
         this.doorUpdate = false
+
+        this.hasLoadedaudrey = false
+        this.hasLoadedsculptures = false
+        this.hasSceneLoaded = false
         this.hasImagesLoaded = false
+        this.hasEnvMapLoaded = false
 
         this.direction = new THREE.Vector3()
         this.velocity = new THREE.Vector3()
 
         this.currentIdx = 0
-
+        this.loadVideos()
+        this.addInstructions()
         this.loadImages()
         this.setupScene()
         this.addEventListeners()
+    }
+
+    addInstructions = () => {
+        document.getElementById('isMultiplayer').addEventListener('change', this.onMultiplayerChange)
+        document.getElementById('name-input').addEventListener('input', this.onNameInput)
+        this.interval = setInterval(this.checkLoaded, 500)
+    }
+
+    checkLoaded = ev => {
+        if (this.hasLoadedaudrey && this.hasLoadedsculptures && this.hasSceneLoaded && this.hasEnvMapLoaded && this.hasImagesLoaded) {
+            document.getElementById('submit').addEventListener('click', this.onLoadScene)
+            document.getElementById('submit').style.opacity = 1
+            clearInterval(this.interval)
+        }
+    }
+
+    onNameInput = ev => {
+        this.name = ev.target.value
+    }
+
+    onMultiplayerChange = ev => {
+        this.isSinglePlayer = !ev.target.checked
+    }
+
+    onLoadScene = ev => {
+        document.getElementById('canvas').style.display = 'block'
+        document.getElementById('instructions').style.display = 'none'
+        document.getElementById('isMultiplayer').removeEventListener('change', this.onMultiplayerChange)
+        document.getElementById('name-input').removeEventListener('input', this.onNameInput)
+        document.getElementById('submit').removeEventListener('click', this.onLoadScene)
+        document.getElementById('sculptures').removeEventListener('canplay', this.onVideoLoad)
+        document.getElementById('audrey').removeEventListener('canplay', this.onVideoLoad)
+        this.hasLoaded = true
+
+        if (!this.isSinglePlayer) {
+            this.setupSockets()
+        }
+        this.audreyVid.play()
+        this.sculptureVid.play()
+        this.render()
     }
 
     loadImages = () => {
@@ -65,6 +105,10 @@ class App {
                 mat.side = THREE.DoubleSide
                 let mesh = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 100), mat)
                 this.imageMeshes.push(mesh)
+
+                if (this.imageMeshes.length === Images.length) {
+                    this.hasImagesLoaded = true
+                }
             })                             
         }
     }
@@ -95,7 +139,7 @@ class App {
 
     onSocketMove = (pos, rot) => {
         if (!this.socket) return
-        this.socket.emit('move', {pos, rot})
+        this.socket.emit('move', {name: this.name, pos, rot})
     }
 
     setupControls = () => {
@@ -181,7 +225,6 @@ class App {
         this.setupCamera()
         this.setupControls()
         this.addScene()
-        this.render()
 
         const pmremGenerator = new THREE.PMREMGenerator(this.renderer)
         pmremGenerator.compileEquirectangularShader()
@@ -194,6 +237,7 @@ class App {
             this.scene.environment = envMap
             tex.dispose()
             pmremGenerator.dispose()
+            this.hasEnvMapLoaded = true
         })
     }
 
@@ -206,17 +250,17 @@ class App {
                     if (child.name === 'VideoArchOtherSide') {
                         let audreyVid = document.getElementById('audrey')
                         this.audreyVid = audreyVid
-                        var texture = new THREE.VideoTexture( audreyVid )
+                        var texture = new THREE.VideoTexture(audreyVid)
+                        this.audreyTexture = texture
                         texture.minFilter = THREE.LinearFilter
                         texture.magFilter = THREE.LinearFilter
                         texture.format = THREE.RGBFormat
-                        child.geometry = new THREE.PlaneGeometry(1,    1, 1) 
+                        child.geometry = new THREE.PlaneGeometry(1, 1, 1) 
                         child.rotation.set(-Math.PI / 2, 0, 0)
                         child.material = new THREE.MeshBasicMaterial({
                             map: texture,
                             side: THREE.DoubleSide
                         })
-                        audreyVid.play()
                     }
                     if (child.name === 'VideoArch') {
                         child.geometry.dispose()
@@ -226,16 +270,18 @@ class App {
                     if (child.name === 'VideoWindow') {
                         let sculptureVid = document.getElementById('sculptures')
                         this.sculptureVid = sculptureVid
-                        var texture = new THREE.VideoTexture( sculptureVid )
+                        var texture = new THREE.VideoTexture(sculptureVid)
+                        this.audreyTexture = texture
+
                         texture.minFilter = THREE.LinearFilter
                         texture.magFilter = THREE.LinearFilter
                         texture.format = THREE.RGBFormat
-                        child.geometry = new THREE.PlaneGeometry(1,    1, 1) 
+                        child.geometry = new THREE.PlaneGeometry(1, 1, 1) 
                         child.rotation.set(-Math.PI / 2, 0, -Math.PI / 2)
                         child.material = new THREE.MeshBasicMaterial({
                             map: texture
                         })
-                        sculptureVid.play()
+                        this.sculptureVid.play()
                     } else {
                         objects.push(child)
 
@@ -245,74 +291,91 @@ class App {
 
                     }
                 }
-            } )
+            })
             gltf.scene.name = 'Hallway'
             gltf.scene.position.set(0, -20, 0)
             gltf.scene.scale.set(1, 1, 1)
+            this.hasSceneLoaded = true
             this.scene.add( gltf.scene )
-        } )
+        })
     }
 
     loadVideos = () => {
-        let sculptureVid = document.getElementById('sculptures')
+        document.getElementById('sculptures').addEventListener('canplay', this.onVideoLoad)
+        document.getElementById('audrey').addEventListener('canplay', this.onVideoLoad)
     }
 
-    onSocketConnect = data => {
+    onVideoLoad = ev => {
+        this[`hasLoaded${ev.target.id}`] = true
+    }
+
+    addUserImage = data => {
         let mesh = this.imageMeshes[0].clone()
         mesh.position.set(data.pos.x, data.pos.y, data.pos.z)
         mesh.rotation.set(data.rot._x, data.rot._y, data.rot._z)
         mesh.name = 'user'
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        canvas.width = canvas.height = 500
+    
+        
+        // draw the number
+        ctx.fillStyle = 'black'
+        ctx.font = '100px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(data.name, 250, 250, 500)
+        
+        // create mesh with texture
+        const textMesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(50, 50, 50),
+          new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map: new THREE.CanvasTexture(canvas), side: THREE.DoubleSide})
+        )
+        textMesh.position.set(0, -60, 0)
+        window.textMesh = textMesh
+        mesh.add(textMesh)
         this.sockets.push({
             id: data.id,
-            mesh
+            mesh,
+            name: data.name
         })
-        console.log('connected')
+
         this.scene.add(mesh)
     }
 
-    onSocketDisconnect = data => {
-        console.log('onDisconnect', data)
-        // let idx = this.sockets.findIndex(socket => socket.id === data.id)
-        // this.scene.remove(this.sockets[idx])
-        // this.sockets = this.sockets.splice(idx, 1)
+    onSocketConnect = data => {
+        this.addUserImage(data)
+        console.log('connected')
     }
 
-    onInitialLoad = meshes => {
-        console.log(meshes)
-        meshes.forEach(data => {
-            let mesh = this.imageMeshes[0].clone()
-            mesh.position.set(data.pos.x, data.pos.y, data.pos.z)
-            mesh.rotation.set(data.rot._x, data.rot._y, data.rot._z)
-            mesh.name = 'user'
-            this.scene.add(mesh)
-            this.sockets.push(data)
-        })
+    onSocketDisconnect = data => {
+        console.log('disconnected')
+        let idx = this.sockets.findIndex(mesh => mesh.id == data)
+        if (idx === -1) return
+        this.scene.remove(this.sockets[idx].mesh)
+        this.sockets.splice(idx, 1)
     }
 
     setupSockets = () => {
         this.socket = io()
-        this.socket.on('initialload', this.onInitialLoad)
-
-        this.socket.emit('userconnect', {
-            pos: {
-                x: this.camera.position.x,
-                y: this.camera.position.y,
-                z: this.camera.position.z
-            },
-            rot: {
-                x: this.camera.rotation._x,
-                y: this.camera.rotation._y,
-                z: this.camera.rotation._z
-            }
-        })
         this.socket.on('userconnect', this.onSocketConnect)
         this.socket.on('userdisconnect', this.onSocketDisconnect)
         this.socket.on('move', this.onMove)
+
+        this.socket.emit('userconnect', {
+            pos: this.camera.position,
+            rot: this.camera.rotation,
+            name: this.name
+        })
     }
 
     onMove = data => {
-        console.log(this.sockets)
         let idx = this.sockets.findIndex(socket => socket.id === data.id)
+        if (idx === -1) {
+            this.addUserImage(data)
+            return
+        }
         this.sockets[idx].mesh.position.set(data.pos.x, data.pos.y, data.pos.z)
         this.sockets[idx].mesh.rotation.set(data.rot._x, data.rot._y, data.rot._z)
     }
@@ -429,15 +492,10 @@ class App {
     }
     
     render = (t) => {
-        if (!this.hasImagesLoaded && this.imageMeshes.length === Images.length) {
-            this.hasImagesLoaded = true
-            console.log('sfdkl')
-            this.setupSockets()
-        }
-        if (this.gltf) {
-            this.detectCollisions()
-            this.updateControls()
-        }
+        if (!this.hasLoaded) return
+
+        this.detectCollisions()
+        this.updateControls()
         this.renderer.render(this.scene, this.camera)
 
         requestAnimationFrame(this.render)

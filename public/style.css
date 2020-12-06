@@ -4,8 +4,134 @@ body {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    background-image: url('./audrey.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: 'Texturina', serif;
 }
 
 video {
     display: none;
 }
+
+canvas {
+    display: none;
+}
+
+#submit {
+    opacity: 0;
+    text-align: center;
+    border-radius: 15px;
+    margin: auto;
+    margin-top: 20px;
+    padding-bottom: 3px;
+    padding-right: 12px;
+    padding-left: 12px;
+    font-family: 'Texturina', serif;
+    cursor: pointer;
+    transition: all ease-in-out .2s;
+}
+
+#submit:hover {
+    background-color: #4e4e4e;
+    color: white;
+}
+
+#instructions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+}
+
+#instructions-text {
+    background-color: #e6e6e6f5;
+    padding: 20px 50px;
+    height: fit-content;
+    line-height: 34px;
+    box-shadow: 0px 0px 10px #424242;
+    border-radius: 86px;
+    display: flex;
+    flex-direction: column;
+}
+
+#name-input {
+    font-family: 'Texturina', serif;
+
+}
+
+#name-input:active, #name-input:focus {
+    outline: none;
+}
+
+.multiplayer {
+    display: flex;
+    align-items: center;
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 15px;
+    margin-left: 15px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 1px;
+    bottom: 1px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #216bf3;;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #216bf3;;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(15px);
+    -ms-transform: translateX(15px);
+    transform: translateX(15px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }

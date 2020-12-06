@@ -1,15 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js" integrity="sha512-Q+IG0h7As6sfqE2t1Xf5IeamNyCXb4EXxGCA9Mlbpv7xtwurVHNdVDbyWeSQ3ulPf2FRlqeu77Ec3SJDdIR63w==" crossorigin="anonymous"></script>    <meta charset="utf-8" />
-    <link rel="stylesheet" href="./style.css">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Texturina:wght@400;600&display=swap" rel="stylesheet">
+
+    
+<link rel="stylesheet" href="./style.css">
+    
 
   </head>
   <body>
-    <video id="sculptures" type="video/mp4" loop src="./videos/sculptures.mp4"></video>
-    <video id="audrey" type="video/mp4" loop src="./videos/AudreyMunson.mp4"></video>
+    <video id="sculptures" type="video/mp4" muted loop="" src="./videos/sculptures.mp4"></video>
+    <video id="audrey" type="video/mp4" loop="" muted src="./videos/AudreyMunson.mp4"></video>
 
     <canvas id="canvas"></canvas>
+    <div id="instructions">
+      <div id="instructions-text">
+        <div id="name-container">
+          Name: <input id="name-input" type="text">
+        </div>
+        <div class="multiplayer">
+          Multiplayer: 
+          <label class="switch">
+            <input id="isMultiplayer" checked="" type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <button id="submit">Start!</button>
+      </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="constants.js"></script>
