@@ -57,6 +57,12 @@ canvas {
     flex-direction: column;
 }
 
+#loading {
+  font-style: italic;
+  transition: all ease-in-out .3s;
+  text-align: center;
+}
+
 #name-input {
     font-family: 'Texturina', serif;
 }

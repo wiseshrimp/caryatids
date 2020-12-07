@@ -6,5 +6,4 @@ const Images = [
     'textures/star.png',
     'textures/manhattan.png',
     'textures/gold.png'
-
 ]

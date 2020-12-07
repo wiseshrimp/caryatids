@@ -62,6 +62,7 @@ class App {
     checkLoaded = ev => {
         if (this.hasLoadedaudrey && this.hasLoadedsculptures && this.hasSceneLoaded && this.hasEnvMapLoaded && this.hasImagesLoaded) {
             document.getElementById('submit').addEventListener('click', this.onLoadScene)
+            document.getElementById('loading').style.opacity = 0
             document.getElementById('submit').style.opacity = 1
             clearInterval(this.interval)
         }
