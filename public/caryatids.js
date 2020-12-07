@@ -243,7 +243,7 @@ class App {
 
     addScene = () => {
         var loader = new THREE.GLTFLoader()
-        loader.load( 'hallwaytest/DoubleHallway_Final.gltf', ( gltf ) => {
+        loader.load( 'hallway/DoubleHallway_Final.gltf', ( gltf ) => {
             this.gltf = gltf.scene
             gltf.scene.traverse( child => {
                 if (child.isMesh) {
@@ -310,7 +310,8 @@ class App {
     }
 
     addUserImage = data => {
-        let mesh = this.imageMeshes[0].clone()
+        let radIdx = Math.floor(Math.random() * (this.imageMeshes.length - 1))
+        let mesh = this.imageMeshes[radIdx].clone()
         mesh.position.set(data.pos.x, data.pos.y, data.pos.z)
         mesh.rotation.set(data.rot._x, data.rot._y, data.rot._z)
         mesh.name = 'user'
