@@ -244,7 +244,7 @@ class App {
 
     addScene = () => {
         var loader = new THREE.GLTFLoader()
-        loader.load( 'hallway/DoubleHallway_Final.gltf', ( gltf ) => {
+        loader.load( 'hallway/hallway.glb', ( gltf ) => {
             this.gltf = gltf.scene
             gltf.scene.traverse( child => {
                 if (child.isMesh) {
@@ -297,6 +297,7 @@ class App {
             gltf.scene.position.set(0, -20, 0)
             gltf.scene.scale.set(1, 1, 1)
             this.hasSceneLoaded = true
+            this.controls.setObjects(objects)
             this.scene.add( gltf.scene )
         })
     }
